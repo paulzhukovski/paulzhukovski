@@ -1,0 +1,22 @@
+
+import random
+
+random_number = random.randrange(1, 11)
+attempt = 1
+
+while  attempt <= 3:
+    input_number = input('Попытка №'+str(attempt)+': ')
+    def lottery(input_number, random_number):
+        if input_number.isdigit() == False:
+            print('Нужно ввести число, а', input_number,' - не число')
+            return False
+        input_number = int(input_number)
+        if input_number == random_number:
+            print('Вы угадали!!! Это была цифра ', random_number)
+            return True
+        print('Вы не угадали!')
+    if lottery(input_number, random_number) ==True:
+        break
+    attempt +=1
+else:
+    print('Было загадано число: ', random_number)
