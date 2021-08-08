@@ -1,0 +1,51 @@
+"""
+Задание:
+    1. Получить у пользователя дату его рождения (в формате "день.месяц.год", например "31.12.2000").
+       Вывести сообщение о том, сколько пользователю лет и сколько дней осталось до Дня Рождения.
+       Для этого написать две функции - одна принимает на вход дату и возвращает количество лет,
+       вторая - принимает на вход дату и возвращает количество дне до следующего дня рождения
+       Пример:
+
+        Введите дату рождения в формате день.месяц.год (например 31.12.2000):
+
+        31.12.2000  <- это то, что ввёл пользователь
+
+        Ваш возраст: 20
+        Дней до Дня Рождения: 142
+"""
+
+from datetime import datetime, timedelta
+
+user_data_input = input('Введите дату рождения в формате день.месяц.год: ')
+user_data = datetime.strptime(user_data_input, "%d.%m.%Y")
+
+
+def old(user_data):
+    now = datetime.now()
+    if now.day <= user_data.day and now.month <= user_data.month:
+        old_user = (now.year - 1) - user_data.year
+        print("Ваш возраст: ", old_user)
+        return old_user
+    else:
+        old_user = now.year - user_data.year
+        print("Ваш возраст: ", old_user)
+        return old_user
+
+
+def birthday(user_data):
+    now = datetime.now()
+    if now.day <= user_data.day and now.month <= user_data.month:
+        f_birthday = datetime(now.year, user_data.month, user_data.day)
+        calc_days = (f_birthday - now).days + 1
+        print("Дней до Дня Рождения: ", calc_days)
+        return calc_days
+    else:
+        f_birthday = datetime(now.year + 1, user_data.month, user_data.day)
+        calc_days = (f_birthday - now).days + 1
+        print("Дней до Дня Рождения: ", calc_days)
+        return calc_days
+
+
+old(user_data)
+print('*' * 25)
+birthday(user_data)
