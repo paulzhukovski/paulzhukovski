@@ -1,4 +1,6 @@
 import sqlite3
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
 from bl.common import render_yes_now_keyboard, render_initial_keyboard
 from bot import bot
@@ -9,9 +11,21 @@ conn = sqlite3.connect('database/users.db', check_same_thread=False)
 cursor = conn.cursor()
 
 
+engine = create_engine(
+    "sqlite+pysqlite:///users.db",
+    echo=True,
+    future=True
+)
+
+
+Session = sessionmaker(engine)
+
+
 def db_table_val(id: int, name: str,surname: str, age: int):
-	cursor.execute('INSERT INTO user (id, name, surname, age) VALUES (?, ?, ?, ?)', (id, name, surname, age))
-	conn.commit()
+    with engine.begin() as conn:
+        conn.execute(
+            text('INSERT INTO user (id, name, surname, age) VALUES (?, ?, ?, ?)', (id, name, surname, age)
+                 )
 
 
 def is_valid_name_surname(name_surname):
