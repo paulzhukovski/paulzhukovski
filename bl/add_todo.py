@@ -1,28 +1,37 @@
 import datetime
-import sqlite3
 
 from bl.common import render_yes_now_keyboard, render_initial_keyboard
 from bl.constants import DATE_FORMAT
 from bot import bot
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+
 
 TODO = {}
-conn = sqlite3.connect('database/todo.db', check_same_thread=False)
-cursor = conn.cursor()
-"""
-command =
-    CREATE TABLE IF NOT EXISTS "todo"(
-        id INTEGER PRIMARY KEY,
-        todo VARCHAR(255),
-        date VARCHAR(255)
-    );
-cursor.execute(command)
-"""
 
 
+Base_todo = declarative_base()
 
-def db_table_val(id: int, todo: str, date: str):
-	cursor.execute('INSERT INTO todo (id, todo, date) VALUES (?, ?, ?)', (id, todo, date))
-	conn.commit()
+engine = create_engine(
+    "sqlite+pysqlite:///database/todo.db",
+    echo=True,
+    future=True
+)
+Session = sessionmaker(engine)
+
+class Todo_add(Base_todo):
+    __tablename__ = "todo"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+    todo_text = Column(String(64), nullable=False)
+    date = Column(String(64), nullable=False)
+
+
+    def __str__(self):
+        return f"Todo_add <id:{self.id}, todo_text:{self.todo_text}, date:{self.datte}>"
+
+Base_todo.metadata.create_all(engine)
 
 
 def process_add_todo(user_id, message):
@@ -72,7 +81,10 @@ def todo_worker(call):
         id = user_id
         todo = TODO[user_id]["todo_text"]
         date = TODO[user_id]["date"]
-        db_table_val(id=id, todo=todo, date=date)
+        session = Session()
+        add_todo = Todo_add(id=id, todo_text=todo, date=date)
+        session.add(add_todo)
+        session.commit()
 
         """
         is_first_todo = not os.path.exists(TODO_FILE)

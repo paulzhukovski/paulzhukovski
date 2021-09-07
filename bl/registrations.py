@@ -19,16 +19,16 @@ Session = sessionmaker(engine)
 class Customer(Base):
     __tablename__ = "customer"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, nullable=False, primary_key=True)
     name = Column(String(64), nullable=False)
     surname = Column(String(64), nullable=False)
     age = Column(Integer, nullable=False)
-    orders = relationship("Order", back_populates="customer")
+
 
     def __str__(self):
         return f"Customer <id:{self.id}, name:{self.name}, surname:{self.surname}, age:{self.age}>"
 
-Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
 
 
 def is_valid_name_surname(name_surname):
