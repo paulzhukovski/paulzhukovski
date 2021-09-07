@@ -1,31 +1,34 @@
-import sqlite3
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 from bl.common import render_yes_now_keyboard, render_initial_keyboard
 from bot import bot
 
 
 USERS = {}
-conn = sqlite3.connect('database/users.db', check_same_thread=False)
-cursor = conn.cursor()
-
+Base = declarative_base()
 
 engine = create_engine(
-    "sqlite+pysqlite:///users.db",
+    "sqlite+pysqlite:///database/users.db",
     echo=True,
     future=True
 )
-
-
 Session = sessionmaker(engine)
 
+class Customer(Base):
+    __tablename__ = "customer"
 
-def db_table_val(id: int, name: str,surname: str, age: int):
-    with engine.begin() as conn:
-        conn.execute(
-            text('INSERT INTO user (id, name, surname, age) VALUES (?, ?, ?, ?)', (id, name, surname, age)
-                 )
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), nullable=False)
+    surname = Column(String(64), nullable=False)
+    age = Column(Integer, nullable=False)
+    orders = relationship("Order", back_populates="customer")
+
+    def __str__(self):
+        return f"Customer <id:{self.id}, name:{self.name}, surname:{self.surname}, age:{self.age}>"
+
+Base.metadata.create_all(engine)
 
 
 def is_valid_name_surname(name_surname):
@@ -93,10 +96,13 @@ def reg_worker(call):
         name = USERS[user_id]['name']
         surname = USERS[user_id]['surname']
         age = USERS[user_id]['age']
-
-        db_table_val(id=id, name=name, surname=surname, age=age)
+        session = Session()
+        add_id = Customer(id=id, name=name,surname=surname, age=age)
+        session.add(add_id)
+        session.commit()
 
         """
+        db_table_val(id=id, name=name, surname=surname, age=age)
         is_first_user = not os.path.exists(USERS_FILE)
         with open(USERS_FILE, "a") as users_csv:
             writer = csv.DictWriter(users_csv, fieldnames=USERS_FIELDNAMES)
