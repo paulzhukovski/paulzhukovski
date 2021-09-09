@@ -19,16 +19,17 @@ Session = sessionmaker(engine)
 class Customer(Base):
     __tablename__ = "customer"
 
-    id = Column(Integer, nullable=False, primary_key=True)
+    user_id = Column(Integer,  primary_key=True)
+    id_telegram = Column(Integer, nullable=False)
     name = Column(String(64), nullable=False)
     surname = Column(String(64), nullable=False)
     age = Column(Integer, nullable=False)
 
 
     def __str__(self):
-        return f"Customer <id:{self.id}, name:{self.name}, surname:{self.surname}, age:{self.age}>"
+        return f"Customer <id_telegram:{self.id_telegram}, name:{self.name}, surname:{self.surname}, age:{self.age}>"
 
-    Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)
 
 
 def is_valid_name_surname(name_surname):
@@ -92,12 +93,12 @@ def reg_worker(call):
     if call.data == 'reg_yes':
         bot.send_message(user_id, "Спасибо, я запомню!")
         print(USERS)
-        id = user_id
+        id_tel = user_id
         name = USERS[user_id]['name']
         surname = USERS[user_id]['surname']
         age = USERS[user_id]['age']
         session = Session()
-        add_id = Customer(id=id, name=name,surname=surname, age=age)
+        add_id = Customer(id_telegram=id_tel, name=name,surname=surname, age=age)
         session.add(add_id)
         session.commit()
 

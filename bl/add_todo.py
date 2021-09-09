@@ -4,7 +4,6 @@ from bl.common import render_yes_now_keyboard, render_initial_keyboard
 from bl.constants import DATE_FORMAT
 from bot import bot
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
-from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 
@@ -23,13 +22,14 @@ Session = sessionmaker(engine)
 class Todo_add(Base_todo):
     __tablename__ = "todo"
 
-    id = Column(Integer, nullable=False, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    id_telegram = Column(Integer, nullable=False)
     todo_text = Column(String(64), nullable=False)
     date = Column(String(64), nullable=False)
 
 
     def __str__(self):
-        return f"Todo_add <id:{self.id}, todo_text:{self.todo_text}, date:{self.datte}>"
+        return f"Todo_add <id_telegram:{self.id_telegram}, todo_text:{self.todo_text}, date:{self.datte}>"
 
 Base_todo.metadata.create_all(engine)
 
@@ -82,7 +82,7 @@ def todo_worker(call):
         todo = TODO[user_id]["todo_text"]
         date = TODO[user_id]["date"]
         session = Session()
-        add_todo = Todo_add(id=id, todo_text=todo, date=date)
+        add_todo = Todo_add(id_telegram=id, todo_text=todo, date=date)
         session.add(add_todo)
         session.commit()
 
